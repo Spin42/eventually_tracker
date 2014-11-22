@@ -82,25 +82,38 @@ Run `rake eventually_tracker:synchronise` to flush the events stored in redis an
 ### Model
 
 ```json
-{"type"=>"model",
- "model_name"=>"message",
- "created"=>"false",
- "action_uid"=>"de447856a6200d2c7ca5432b29833ef6",
- "date_time"=>"2014-11-22T14:12:08.377Z",
- "data"=>
-  {"text"=>["First title", "First title NEW"],
-   "author"=>["Description\r\n", "Description NEW\r\n"]}}
+{
+  "type": "model",
+  "model_name": "message",
+  "created": "false",
+  "action_uid": "de447856a6200d2c7ca5432b29833ef6",
+  "date_time": "2014-11-22T14:12:08.377Z",
+  "data": {
+    "text": [
+      "First title",
+      "First title NEW"
+    ],
+    "author": [
+      "Description\r\n",
+      "Description NEW\r\n"
+    ]
+  }
+}
 ```
 
 ### Controller
 
 ```json
-{"type"=>"controller",
- "date_time"=>"2014-11-22T14:10:28.897Z",
- "controller_name"=>"messages",
- "action_name"=>"index",
- "action_uid"=>"464a09594d23174dc59a35e2c7f016a6",
- "data"=>{"query"=>"query parameters"}}
+{
+  "type": "controller",
+  "date_time": "2014-11-22T14:10:28.897Z",
+  "controller_name": "messages",
+  "action_name": "index",
+  "action_uid": "464a09594d23174dc59a35e2c7f016a6",
+  "data": {
+    "query": "query parameters"
+  }
+}
 ```
 
 ## Contributing
