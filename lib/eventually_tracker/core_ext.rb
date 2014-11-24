@@ -6,19 +6,43 @@ module EventuallyTracker
       ActiveRecord::Base.class_eval do
         define_singleton_method :track_change do
           before_save do
+            define_action_uid
+          end
+          before_destroy do
+            define_action_uid
+          end
+          after_save do
+            track_model_change(eventually_tracker)
+          end
+          after_destroy do
+            track_model_change(eventually_tracker, true)
+          end
+          after_save do
+            remove_action_uid
+          end
+          after_destroy do
+            remove_action_uid
+          end
+
+          def define_action_uid
             action_uid              = SecureRandom.hex
             @eventually_action_uid  = action_uid
             ActiveRecord::Base.send(:define_method, ACTION_UID_METHOD_NAME, proc { action_uid })
           end
-          after_save do
-            model_name  = self.class.name.underscore
-            created     = created_at == updated_at
-            data        = changes.except :created_at, :updated_at
-            action_uid  = send(ACTION_UID_METHOD_NAME)
-            eventually_tracker.track_change model_name, created, action_uid, data
-          end
-          after_save do
+
+          def remove_action_uid
             ActiveRecord::Base.send(:remove_method, ACTION_UID_METHOD_NAME)
+          end
+
+          def track_model_change(eventually_tracker, destroyed = false)
+            model_name  = self.class.name.underscore
+            action_name = :update
+            action_name = :create  if created_at == updated_at
+            action_name = :destroy if destroyed
+            data        = changes.except :created_at, :updated_at
+            data        = { id: [id, id] } if destroyed
+            action_uid  = send(ACTION_UID_METHOD_NAME)
+            eventually_tracker.track_change model_name, action_name, action_uid, data
           end
         end
       end
