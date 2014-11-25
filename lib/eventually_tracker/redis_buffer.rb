@@ -21,7 +21,7 @@ module EventuallyTracker
       else
         element = @redis.lpop(@configuration.redis_key)
         if element
-          JSON.parse element[1]
+          JSON.parse element
         else
           nil
         end
