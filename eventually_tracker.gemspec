@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = EventuallyTracker::VERSION
   spec.authors       = ["Lo\xC3\xAFc Vigneron"]
   spec.email         = ["loic.vigneron@gmail.com"]
-  spec.summary       = %q{TODO: Write a short summary. Required.}
-  spec.description   = %q{TODO: Write a longer description. Optional.}
+  spec.summary       = "Track your application events without pain."
+  spec.description   = "Track all your controller events and model changes seamlessly and without code pollution."
   spec.homepage      = ""
   spec.license       = "MIT"
 
