@@ -24,11 +24,12 @@ Add an initializer eventually_tracker.rb.
 
 ```ruby
 EventuallyTracker.configure do | config |
-    config.redis_key  = "eventually_tracker"
-    config.redis_url  = "redis://localhost:6379"
-    config.api_url    = "http://localhost:3000/api/events"
-    config.api_secret = "api_secret"
-    config.api_key    = "api_key"
+    config.redis_key    = "eventually_tracker"
+    config.redis_url    = "redis://localhost:6379"
+    config.api_url      = "http://localhost:3000/api/events"
+    config.api_secret   = "api_secret"
+    config.api_key      = "api_key"
+    config.blocking_pop = true
  end
 ```
 
@@ -39,12 +40,12 @@ require "base64"
 
 class Api::EventsController < APIController
   before_action :authenticate
-  
+
   def create
     event = params["event"]
     # Handle event data
   end
-  
+
   private
   def authenticate
     api_key     = Base64.decode64 params["api_key"]
