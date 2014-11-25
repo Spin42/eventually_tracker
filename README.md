@@ -85,10 +85,10 @@ Run `rake eventually_tracker:synchronise` to flush the events stored in redis an
 ```json
 {
   "type": "model",
-  "model_name": "message",
-  "created": "false",
-  "action_uid": "de447856a6200d2c7ca5432b29833ef6",
   "date_time": "2014-11-22T14:12:08.377Z",
+  "model_name": "message",
+  "action_name": "update",
+  "action_uid": "de447856a6200d2c7ca5432b29833ef6",
   "data": {
     "text": [
       "First title",
@@ -101,6 +101,7 @@ Run `rake eventually_tracker:synchronise` to flush the events stored in redis an
   }
 }
 ```
+`action` is `create`, `update` or `destroy`
 
 ### Controller
 
