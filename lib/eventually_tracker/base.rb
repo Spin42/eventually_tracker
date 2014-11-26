@@ -8,7 +8,15 @@ module EventuallyTracker
     end
 
     def track_action(controller_name, action_name, action_uid, data, session_data)
-      @logger.info "Track controller action #{action_uid} for #{controller_name}:#{action_name} => #{data} | #{session_data}"
+      str =
+      """Track controller action
+      action_uid:\t#{action_uid}
+      controller_name:\t#{controller_name}
+      action_name:\t#{action_name}
+      session_data:\t#{session_data}
+      data:\t\t#{data}
+      """
+      @logger.info str
       @buffer.push_right({
         type: "controller",
         date_time: Time.zone.now,
@@ -21,8 +29,15 @@ module EventuallyTracker
     end
 
     def track_change(model_name, action_name, action_uid, data)
+      str =
+      """Track model change
+      action_uid:\t#{action_uid}
+      model_name:\t#{model_name}
+      action_name:\t#{action_name}
+      data:\t\t#{data}
+      """
       if !data.empty?
-        @logger.info "Track model change for #{model_name}:#{action_name} #{data} caused by #{action_uid}"
+        @logger.info str
         @buffer.push_right({
           type: "model",
           model_name: model_name,

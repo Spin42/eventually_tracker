@@ -10,9 +10,10 @@ module EventuallyTracker
     def self.extend_active_record_base(eventually_tracker)
       ActiveRecord::Base.class_eval do
         define_singleton_method :track_change do
-          after_create  { EventuallyTracker::CoreExt.track_change eventually_tracker, :create, changes }
-          after_update  { EventuallyTracker::CoreExt.track_change eventually_tracker, :update, changes }
-          after_destroy { EventuallyTracker::CoreExt.track_change eventually_tracker, :destroy, changes }
+          model_name = self.name.underscore
+          after_create  { EventuallyTracker::CoreExt.track_change eventually_tracker, model_name, :create, changes }
+          after_update  { EventuallyTracker::CoreExt.track_change eventually_tracker, model_name, :update, changes }
+          after_destroy { EventuallyTracker::CoreExt.track_change eventually_tracker, model_name, :destroy, changes }
         end
       end
     end
@@ -26,7 +27,7 @@ module EventuallyTracker
         define_singleton_method :track_action do | options = {} |
           before_action(options) { EventuallyTracker::CoreExt.define_action_uid }
           before_action(options) { EventuallyTracker::CoreExt.track_action eventually_tracker, params, session }
-          after_action(options) { EventuallyTracker::CoreExt.remove_action_uid }
+          after_action(options)  { EventuallyTracker::CoreExt.remove_action_uid }
         end
       end
     end
@@ -51,8 +52,7 @@ module EventuallyTracker
       eventually_tracker.track_action controller_name, action_name, @eventually_action_uid, data, session_data
     end
 
-    def self.track_change(eventually_tracker, action_name, changes)
-      model_name  = self.class.name.underscore
+    def self.track_change(eventually_tracker, model_name, action_name, changes)
       data        = changes.except :created_at, :updated_at
       data        = { id: [id, nil] } if action_name == :destroy
       action_uid  = send(ACTION_UID_METHOD_NAME) if self.respond_to?(ACTION_UID_METHOD_NAME)
