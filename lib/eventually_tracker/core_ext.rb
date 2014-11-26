@@ -1,3 +1,4 @@
+require "pp"
 module EventuallyTracker
   ACTION_UID_METHOD_NAME = "eventually_action_uid"
 
@@ -40,11 +41,16 @@ module EventuallyTracker
             ActiveRecord::Base.send(:define_method, ACTION_UID_METHOD_NAME, proc { action_uid })
           end
           before_action options do
+            session_data    = EventuallyTracker.config.session_keys.inject({}) do | session_data, session_key |
+                                session_data[session_key] = session[session_key]
+                                session_data
+                              end
+            puts session_data.inspect
             controller_name = params[:controller]
             action_name     = params[:action]
             data            = params.except :controller, :action
             if EventuallyTracker.config.environments.include?(Rails.env)
-              eventually_tracker.track_action controller_name, action_name, @eventually_action_uid, data
+              eventually_tracker.track_action controller_name, action_name, @eventually_action_uid, data, session_data
             end
           end
           after_action do

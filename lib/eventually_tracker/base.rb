@@ -7,15 +7,16 @@ module EventuallyTracker
       @buffer         = buffer
     end
 
-    def track_action(controller_name, action_name, action_uid, data)
-      @logger.info "Track controller action #{action_uid} for #{controller_name}:#{action_name} => #{data}"
+    def track_action(controller_name, action_name, action_uid, data, session_data)
+      @logger.info "Track controller action #{action_uid} for #{controller_name}:#{action_name} => #{data} | #{session_data}"
       @buffer.push_right({
         type: "controller",
         date_time: Time.zone.now,
         controller_name: controller_name,
         action_name: action_name,
         action_uid: action_uid,
-        data: data
+        data: data,
+        session_data: session_data
       })
     end
 
