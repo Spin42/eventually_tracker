@@ -7,7 +7,7 @@ module EventuallyTracker
     config_accessor :api_secret
     config_accessor :api_key
     config_accessor :blocking_pop
-    config_accessor :environments
-    config_accessor :session_keys
+    config_accessor :development_environments
+    config_accessor :tracked_session_keys
   end
 end
