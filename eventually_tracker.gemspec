@@ -23,5 +23,4 @@ Gem::Specification.new do |spec|
   spec.add_dependency "rest-client"
   spec.add_dependency "redis"
   spec.add_dependency "logging"
-
 end

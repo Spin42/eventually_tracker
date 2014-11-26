@@ -5,44 +5,27 @@ module EventuallyTracker
     def self.extend_active_record_base(eventually_tracker)
       ActiveRecord::Base.class_eval do
         define_singleton_method :track_change do
-          before_save do
-            define_action_uid
+
+          after_create do
+            track_model_change(eventually_tracker, "create")
           end
-          before_destroy do
-            define_action_uid
+
+          after_update do
+            track_model_change(eventually_tracker, "update")
           end
-          after_save do
-            track_model_change(eventually_tracker)
-          end
+
           after_destroy do
-            track_model_change(eventually_tracker, true)
-          end
-          after_save do
-            remove_action_uid
-          end
-          after_destroy do
-            remove_action_uid
+            track_model_change(eventually_tracker, "destroy")
           end
 
-          def define_action_uid
-            action_uid              = SecureRandom.hex
-            @eventually_action_uid  = action_uid
-            ActiveRecord::Base.send(:define_method, ACTION_UID_METHOD_NAME, proc { action_uid })
-          end
-
-          def remove_action_uid
-            ActiveRecord::Base.send(:remove_method, ACTION_UID_METHOD_NAME)
-          end
-
-          def track_model_change(eventually_tracker, destroyed = false)
+          def track_model_change(eventually_tracker, action_name)
             model_name  = self.class.name.underscore
-            action_name = :update
-            action_name = :create  if created_at == updated_at
-            action_name = :destroy if destroyed
             data        = changes.except :created_at, :updated_at
-            data        = { id: [id, id] } if destroyed
-            action_uid  = send(ACTION_UID_METHOD_NAME)
-            eventually_tracker.track_change model_name, action_name, action_uid, data
+            data        = { id: [id, nil] } if action_name == "destroy"
+            action_uid  = send(ACTION_UID_METHOD_NAME) if defined?(ACTION_UID_METHOD_NAME)
+            if EventuallyTracker.config.environments.include?(Rails.env)
+              eventually_tracker.track_change model_name, action_name, action_uid, data
+            end
           end
         end
       end
@@ -60,7 +43,9 @@ module EventuallyTracker
             controller_name = params[:controller]
             action_name     = params[:action]
             data            = params.except :controller, :action
-            eventually_tracker.track_action controller_name, action_name, @eventually_action_uid, data
+            if EventuallyTracker.config.environments.include?(Rails.env)
+              eventually_tracker.track_action controller_name, action_name, @eventually_action_uid, data
+            end
           end
           after_action do
             ActiveRecord::Base.send(:remove_method, ACTION_UID_METHOD_NAME)
