@@ -24,12 +24,14 @@ Add an initializer eventually_tracker.rb.
 
 ```ruby
 EventuallyTracker.configure do | config |
-    config.redis_key    = "eventually_tracker"
-    config.redis_url    = "redis://localhost:6379"
-    config.api_url      = "http://localhost:3000/api/events"
-    config.api_secret   = "api_secret"
-    config.api_key      = "api_key"
-    config.blocking_pop = true
+    config.redis_key    				= "eventually_tracker"
+    config.redis_url    				= "redis://localhost:6379"
+    config.api_url      				= "http://localhost:3000/api/events"
+    config.api_secret   				= "api_secret"
+    config.api_key      				= "api_key"
+    config.wait_events 					= true
+    config.development_environments 	= [ "developmenet" ]
+    config.tracked_session_keys     	= [ "user_id" ]
  end
 ```
 
@@ -112,9 +114,8 @@ Run `rake eventually_tracker:synchronise` to flush the events stored in redis an
   "controller_name": "messages",
   "action_name": "index",
   "action_uid": "464a09594d23174dc59a35e2c7f016a6",
-  "data": {
-    "query": "query parameters"
-  }
+  "data": { ... }
+  "session_data": { ... }
 }
 ```
 

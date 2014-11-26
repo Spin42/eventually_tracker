@@ -43,6 +43,7 @@ module EventuallyTracker
     config.api_url                  = "http://localhost:3000/api/events"
     config.api_secret               = "api_secret"
     config.api_key                  = "api_key"
+    config.wait_events              = true
     config.development_environments = []
     config.tracked_session_keys     = []
   end

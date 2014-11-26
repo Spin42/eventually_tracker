@@ -16,16 +16,13 @@ module EventuallyTracker
     end
 
     def pop_left
-      if @configuration.blocking_pop
-        JSON.parse @redis.blpop(@configuration.redis_key)[1]
+      if @configuration.wait_events
+        element = @redis.blpop(@configuration.redis_key)[1]
       else
-        element = @redis.lpop(@configuration.redis_key)
-        if element
-          JSON.parse element
-        else
-          nil
-        end
+        element = @redis.lpop @configuration.redis_key
       end
+      element = JSON.parse element if element
+      element
     end
 
     def size
