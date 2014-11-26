@@ -30,7 +30,7 @@ EventuallyTracker.configure do | config |
     config.api_secret   				= "api_secret"
     config.api_key      				= "api_key"
     config.wait_events 					= true
-    config.development_environments 	= [ "developmenet" ]
+    config.development_environments 	= [ "development" ]
     config.tracked_session_keys     	= [ "user_id" ]
  end
 ```
