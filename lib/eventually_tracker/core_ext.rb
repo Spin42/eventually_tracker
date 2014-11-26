@@ -29,7 +29,7 @@ module EventuallyTracker
             model_name  = self.class.name.underscore
             data        = changes.except :created_at, :updated_at
             data        = { id: [id, nil] } if action_name == :destroy
-            action_uid  = send(ACTION_UID_METHOD_NAME) if defined?(ACTION_UID_METHOD_NAME)
+            action_uid  = send(ACTION_UID_METHOD_NAME) if self.respond_to?(ACTION_UID_METHOD_NAME)
             eventually_tracker.track_change model_name, action_name, action_uid, data
           end
         end
