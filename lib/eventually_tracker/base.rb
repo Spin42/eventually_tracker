@@ -21,8 +21,8 @@ module EventuallyTracker
     end
 
     def track_change(model_name, action_name, action_uid, data)
-      if !data.empty? || action_name == :destroy
-        @logger.info "Track model change for #{model_name} #{data} caused by #{action_uid}"
+      if !data.empty?
+        @logger.info "Track model change for #{model_name}:#{action_name} #{data} caused by #{action_uid}"
         @buffer.push_right({
           type: "model",
           model_name: model_name,

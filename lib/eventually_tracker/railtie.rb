@@ -2,7 +2,7 @@ module EventuallyTracker
   class Railtie < Rails::Railtie
     railtie_name :eventually_tracker
 
-    config.after_initialize do
+    config.to_prepare do
       EventuallyTracker.init
     end
 

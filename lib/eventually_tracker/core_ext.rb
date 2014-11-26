@@ -45,7 +45,6 @@ module EventuallyTracker
                                 session_data[session_key] = session[session_key]
                                 session_data
                               end
-            puts session_data.inspect
             controller_name = params[:controller]
             action_name     = params[:action]
             data            = params.except :controller, :action
