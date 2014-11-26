@@ -65,9 +65,9 @@ module EventuallyTracker
     private
 
     def self.define_action_uid
-      action_uid              = SecureRandom.hex
+      action_uid              = SecureRandom.uuid
       @eventually_action_uid  = action_uid
-      ActiveRecord::Base.send(:define_method, ACTION_UID_METHOD_NAME, proc { action_uid })
+      ActiveRecord::Base.send :define_method, ACTION_UID_METHOD_NAME, proc { action_uid }
     end
 
     def self.remove_action_uid
