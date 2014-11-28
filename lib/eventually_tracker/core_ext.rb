@@ -4,7 +4,7 @@ module EventuallyTracker
     ACTION_UID_METHOD_NAME = "eventually_tracker_action_uid"
 
     def self.extend_active_record_base_dummy
-      ActiveRecord::Base.class_eval { define_singleton_method :track_change }
+      ActiveRecord::Base.class_eval { define_singleton_method(:track_change) { ; } }
     end
 
     def self.extend_active_record_base(eventually_tracker)
@@ -25,7 +25,7 @@ module EventuallyTracker
     end
 
     def self.extend_active_controller_base_dummy
-      ActionController::Base.class_eval { define_singleton_method :track_action }
+      ActionController::Base.class_eval { define_singleton_method(:track_action) { ; } }
     end
 
     def self.extend_active_controller_base(eventually_tracker)
