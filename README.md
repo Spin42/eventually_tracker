@@ -30,7 +30,7 @@ EventuallyTracker.configure do | config |
     config.api_secret   				= "api_secret"
     config.api_key      				= "api_key"
     config.wait_events 					= true
-    config.development_environments 	= [ "developmenet" ]
+    config.development_environments 	= [ "development" ]
     config.tracked_session_keys     	= [ "user_id" ]
  end
 ```
@@ -114,8 +114,8 @@ Run `rake eventually_tracker:synchronise` to flush the events stored in redis an
   "controller_name": "messages",
   "action_name": "index",
   "action_uid": "464a09594d23174dc59a35e2c7f016a6",
-  "data": { ... }
-  "session_data": { ... }
+  "data": { },
+  "session_data": { }
 }
 ```
 
