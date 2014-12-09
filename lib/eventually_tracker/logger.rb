@@ -34,6 +34,10 @@ module EventuallyTracker
       @logger.info text
     end
 
+    def warn(text)
+      @logger.warn text
+    end
+
     def error(text)
       @logger.error text
     end

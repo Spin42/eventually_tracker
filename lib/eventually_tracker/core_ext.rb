@@ -30,12 +30,12 @@ module EventuallyTracker
       ActionController::Base.class_eval { define_singleton_method(:track_action) { ; } }
     end
 
-    def self.extend_active_controller_base(eventually_tracker)
+    def self.extend_active_controller_base(eventually_tracker, logger)
       ActionController::Base.class_eval do
         define_singleton_method :track_action do | options = {} |
 
           before_action(options) { define_action_uid }
-          before_action(options) { track_action eventually_tracker }
+          before_action(options) { track_action eventually_tracker, logger }
           after_action(options)  { remove_action_uid }
 
           def define_action_uid
@@ -48,15 +48,19 @@ module EventuallyTracker
             ActiveRecord::Base.send :remove_method, ACTION_UID_METHOD_NAME
           end
 
-          def track_action(eventually_tracker)
-            return if EventuallyTracker::CoreExt.is_rejected_origin? request
-            cookies_data    = EventuallyTracker::CoreExt.extract_tracked_session_keys session
-            controller_name = params[:controller]
-            action_name     = params[:action]
-            data            = params.reject do | key, value |
+          def track_action(eventually_tracker, logger)
+            if EventuallyTracker::CoreExt.is_rejected_origin? request
+              logger.warn "Origin user agent rejected: #{request.user_agent}"
+              return
+            end
+            cookies_data      = EventuallyTracker::CoreExt.extract_tracked_session_keys session
+            controller_name   = params[:controller]
+            action_name       = params[:action]
+            data              = params.reject do | key, value |
               REJECTED_ACTION_PARAMS_KEYS.include?(key) ||
                 REJECTED_ACTION_PARAMS_TYPES.include?(value.class)
             end
+            data[:user_agent] = request.user_agent
             eventually_tracker.track_action controller_name, action_name, @eventually_action_uid, data, cookies_data
           end
         end

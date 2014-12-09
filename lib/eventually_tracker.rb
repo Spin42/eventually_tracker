@@ -33,7 +33,7 @@ module EventuallyTracker
       @buffer             = EventuallyTracker::RedisBuffer.new @logger, @configuration
       eventually_tracker  = EventuallyTracker::Base.new @logger, @buffer, @configuration
       EventuallyTracker::CoreExt.extend_active_record_base eventually_tracker
-      EventuallyTracker::CoreExt.extend_active_controller_base eventually_tracker
+      EventuallyTracker::CoreExt.extend_active_controller_base eventually_tracker, @logger
     end
   end
 
