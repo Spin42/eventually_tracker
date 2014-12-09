@@ -9,5 +9,6 @@ module EventuallyTracker
     config_accessor :wait_events
     config_accessor :development_environments
     config_accessor :tracked_session_keys
+    config_accessor :rejected_user_agents
   end
 end

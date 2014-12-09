@@ -46,7 +46,7 @@ module EventuallyTracker
     config.wait_events              = true
     config.development_environments = []
     config.tracked_session_keys     = []
+    config.rejected_user_agents     = []
   end
-
 end
 

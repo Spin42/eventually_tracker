@@ -1,7 +1,9 @@
 module EventuallyTracker
   class CoreExt
 
-    ACTION_UID_METHOD_NAME = "eventually_tracker_action_uid"
+    ACTION_UID_METHOD_NAME        = "eventually_tracker_action_uid"
+    REJECTED_ACTION_PARAMS_KEYS   = [ :controller, :action ]
+    REJECTED_ACTION_PARAMS_TYPES  = [ ActionDispatch::Http::UploadedFile ]
 
     def self.extend_active_record_base_dummy
       ActiveRecord::Base.class_eval { define_singleton_method :track_change }
@@ -47,11 +49,15 @@ module EventuallyTracker
           end
 
           def track_action(eventually_tracker)
-            session_data    = EventuallyTracker::CoreExt.extract_tracked_session_keys session
+            return if EventuallyTracker::CoreExt.is_rejected_origin? request
+            cookies_data    = EventuallyTracker::CoreExt.extract_tracked_session_keys session
             controller_name = params[:controller]
             action_name     = params[:action]
-            data            = params.except :controller, :action
-            eventually_tracker.track_action controller_name, action_name, @eventually_action_uid, data, session_data
+            data            = params.reject do | key, value |
+              REJECTED_ACTION_PARAMS_KEYS.include?(key) ||
+                REJECTED_ACTION_PARAMS_TYPES.include?(value.class)
+            end
+            eventually_tracker.track_action controller_name, action_name, @eventually_action_uid, data, cookies_data
           end
         end
       end
@@ -65,6 +71,13 @@ module EventuallyTracker
         hash[key] = session[key]
         hash
       end
+    end
+
+    def self.is_rejected_origin?(request)
+      rejected_user_agents  = Regexp.union EventuallyTracker.config.rejected_user_agents
+      user_agent            = request.user_agent
+      matching_user_agents  = user_agent.match rejected_user_agents
+      !matching_user_agents.nil?
     end
   end
 end
