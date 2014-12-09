@@ -7,13 +7,13 @@ module EventuallyTracker
       @buffer         = buffer
     end
 
-    def track_action(controller_name, action_name, action_uid, data, cookies_data)
+    def track_action(controller_name, action_name, action_uid, data, session_data)
       str =
       """Track controller action
       action_uid:\t#{action_uid}
       controller_name:\t#{controller_name}
       action_name:\t#{action_name}
-      session_data:\t#{cookies_data}
+      session_data:\t#{session_data}
       data:\t\t#{data}
       """
       @logger.info str
@@ -24,7 +24,7 @@ module EventuallyTracker
         action_name: action_name,
         action_uid: action_uid,
         data: data,
-        cookies_data: cookies_data
+        session_data: session_data
       })
     end
 
