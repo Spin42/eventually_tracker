@@ -18,7 +18,8 @@ module EventuallyTracker
       """
       @logger.info(str)
       @buffer.push_right({
-        type: "controller",
+        application_name: @configuration.application_name,
+        type:             "controller",
         date_time:        Time.zone.now,
         controller_name:  controller_name,
         action_name:      action_name,
@@ -39,12 +40,13 @@ module EventuallyTracker
       if !data.empty?
         @logger.info(str)
         @buffer.push_right({
-          type:         "model",
-          model_name:   model_name,
-          action_name:  action_name,
-          action_uid:   action_uid,
-          date_time:    Time.zone.now,
-          data:         data
+          application_name: @configuration.application_name,
+          type:             "model",
+          model_name:       model_name,
+          action_name:      action_name,
+          action_uid:       action_uid,
+          date_time:        Time.zone.now,
+          data:             data
         })
       end
     end

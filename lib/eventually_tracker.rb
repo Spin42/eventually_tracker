@@ -38,6 +38,7 @@ module EventuallyTracker
   end
 
   configure do |config|
+    config.application_name         = Rails.application.class.parent_name.underscore
     config.redis_key                = "eventually_tracker"
     config.redis_url                = "redis://localhost:6379"
     config.api_url                  = "http://localhost:3000/api/events"
