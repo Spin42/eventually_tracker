@@ -7,7 +7,7 @@ module EventuallyTracker
     end
 
     rake_tasks do
-      load "tasks/eventually_tracker.rake"
+      load("tasks/eventually_tracker.rake")
     end
   end
 end

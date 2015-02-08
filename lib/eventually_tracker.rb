@@ -25,15 +25,15 @@ module EventuallyTracker
   end
 
   def self.init
-    if @configuration.development_environments.include? Rails.env
+    if @configuration.development_environments.include?(Rails.env)
       EventuallyTracker::CoreExt.extend_active_record_base_dummy
       EventuallyTracker::CoreExt.extend_active_controller_base_dummy
     else
       @logger             = EventuallyTracker::Logger.new
-      @buffer             = EventuallyTracker::RedisBuffer.new @logger, @configuration
-      eventually_tracker  = EventuallyTracker::Base.new @logger, @buffer, @configuration
-      EventuallyTracker::CoreExt.extend_active_record_base eventually_tracker
-      EventuallyTracker::CoreExt.extend_active_controller_base eventually_tracker, @logger
+      @buffer             = EventuallyTracker::RedisBuffer.new(@logger, @configuration)
+      eventually_tracker  = EventuallyTracker::Base.new(@logger, @buffer, @configuration)
+      EventuallyTracker::CoreExt.extend_active_record_base(eventually_tracker)
+      EventuallyTracker::CoreExt.extend_active_controller_base(eventually_tracker, @logger)
     end
   end
 
