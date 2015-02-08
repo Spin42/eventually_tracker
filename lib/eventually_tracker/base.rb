@@ -20,7 +20,7 @@ module EventuallyTracker
       @buffer.push_right({
         application_name: Rails.application.class.parent_name.underscore,
         type:             "controller",
-        date_time:        Time.zone.now,
+        date_time:        Time.now.utc,
         controller_name:  controller_name,
         action_name:      action_name,
         action_uid:       action_uid,
@@ -45,7 +45,7 @@ module EventuallyTracker
           model_name:       model_name,
           action_name:      action_name,
           action_uid:       action_uid,
-          date_time:        Time.zone.now,
+          date_time:        Time.now.utc,
           data:             data
         })
       end
