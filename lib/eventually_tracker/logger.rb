@@ -23,7 +23,7 @@ module EventuallyTracker
         )
       )
       @logger = Logging.logger["Eventually Tracker"]
-      @logger.add_appenders "stdout"
+      @logger.add_appenders("stdout")
     end
 
     def debug(text)

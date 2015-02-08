@@ -27,7 +27,9 @@ module EventuallyTracker
     end
 
     def self.extend_active_controller_base_dummy
-      ActionController::Base.class_eval { define_singleton_method(:track_action) { ; } }
+      ActionController::Base.class_eval do
+        define_singleton_method(:track_action) { ; }
+      end
     end
 
     def self.extend_active_controller_base(eventually_tracker, logger)
@@ -35,13 +37,13 @@ module EventuallyTracker
         define_singleton_method(:track_action) do | options = {} |
 
           before_action(options) { define_action_uid }
-          before_action(options) { track_action eventually_tracker, logger }
+          before_action(options) { track_action(eventually_tracker, logger) }
           after_action(options)  { remove_action_uid }
 
           def define_action_uid
             action_uid              = SecureRandom.uuid
             @eventually_action_uid  = action_uid
-            ActiveRecord::Base.send(:define_method, ACTION_UID_METHOD_NAME, proc) { action_uid }
+            ActiveRecord::Base.send(:define_method, ACTION_UID_METHOD_NAME, proc {action_uid})
           end
 
           def remove_action_uid

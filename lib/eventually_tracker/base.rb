@@ -18,7 +18,7 @@ module EventuallyTracker
       """
       @logger.info(str)
       @buffer.push_right({
-        application_name: @configuration.application_name,
+        application_name: Rails.application.class.parent_name.underscore,
         type:             "controller",
         date_time:        Time.zone.now,
         controller_name:  controller_name,
@@ -40,7 +40,7 @@ module EventuallyTracker
       if !data.empty?
         @logger.info(str)
         @buffer.push_right({
-          application_name: @configuration.application_name,
+          application_name: Rails.application.class.parent_name.underscore,
           type:             "model",
           model_name:       model_name,
           action_name:      action_name,
