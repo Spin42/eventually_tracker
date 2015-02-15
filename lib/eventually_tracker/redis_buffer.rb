@@ -1,3 +1,5 @@
+require "base64"
+
 module EventuallyTracker
   class RedisBuffer
 
@@ -8,11 +10,13 @@ module EventuallyTracker
     end
 
     def push_left(data)
-      @redis.lpush(@configuration.redis_key, data.to_json)
+      mapped_json = map_complex_json(data)
+      @redis.lpush(@configuration.redis_key, mapped_json.to_json)
     end
 
     def push_right(data)
-      @redis.rpush(@configuration.redis_key, data.to_json)
+      mapped_json = map_complex_json(data)
+      @redis.rpush(@configuration.redis_key, mapped_json.to_json)
     end
 
     def pop_left
@@ -27,6 +31,31 @@ module EventuallyTracker
 
     def size
       @redis.llen(@configuration.redis_key)
+    end
+
+    private
+    def map_complex_json(object)
+      if object.is_a?(Array)
+        array = []
+        object.each do | value |
+          array.push(map_complex_json(value))
+        end
+        array
+      elsif object.is_a?(Hash)
+        hash = {}
+        object.each do | key, value |
+          hash[key] = map_complex_json(value)
+        end
+        hash
+      elsif object.is_a?(ActionDispatch::Http::UploadedFile)
+        {
+          "file_name"     => object.original_filename,
+          "content_type"  => object.content_type,
+          "content"       => Base64.encode64(object.tempfile.read)
+        }
+      else
+        object
+      end
     end
   end
 end
