@@ -86,11 +86,12 @@ Run `rake eventually_tracker:synchronize` to flush the events stored in redis an
 
 ```json
 {
-  "type": "model",
-  "date_time": "2014-11-22T14:12:08.377Z",
-  "model_name": "message",
-  "action_name": "update",
-  "action_uid": "de447856a6200d2c7ca5432b29833ef6",
+  "application_name": "my_rails_app",
+  "type":             "model",
+  "date_time":        "2014-11-22T14:12:08.377Z",
+  "model_name":       "message",
+  "action_name":      "update",
+  "action_uid":       "de447856a6200d2c7ca5432b29833ef6",
   "data": {
     "text": [
       "First title",
@@ -109,13 +110,14 @@ Run `rake eventually_tracker:synchronize` to flush the events stored in redis an
 
 ```json
 {
-  "type": "controller",
-  "date_time": "2014-11-22T14:10:28.897Z",
-  "controller_name": "messages",
-  "action_name": "index",
-  "action_uid": "464a09594d23174dc59a35e2c7f016a6",
-  "data": { },
-  "session_data": { }
+  "application_name": "my_rails_app",
+  "type":             "controller",
+  "date_time":        "2014-11-22T14:10:28.897Z",
+  "controller_name":  "messages",
+  "action_name":      "index",
+  "action_uid":       "464a09594d23174dc59a35e2c7f016a6",
+  "data":             { },
+  "session_data":     { }
 }
 ```
 

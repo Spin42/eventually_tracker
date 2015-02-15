@@ -3,7 +3,6 @@ module EventuallyTracker
 
     ACTION_UID_METHOD_NAME        = "eventually_tracker_action_uid"
     REJECTED_ACTION_PARAMS_KEYS   = [ :controller, :action ]
-    # REJECTED_ACTION_PARAMS_TYPES  = [ ActionDispatch::Http::UploadedFile ]
 
     def self.extend_active_record_base_dummy
       ActiveRecord::Base.class_eval { define_singleton_method(:track_change) { ; } }
