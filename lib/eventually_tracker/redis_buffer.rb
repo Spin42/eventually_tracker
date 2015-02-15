@@ -10,13 +10,13 @@ module EventuallyTracker
     end
 
     def push_left(data)
-      mapped_json = map_complex_json(data)
-      @redis.lpush(@configuration.redis_key, mapped_json.to_json)
+      mapped_object = map_complex_object(data)
+      @redis.lpush(@configuration.redis_key, mapped_object.to_json)
     end
 
     def push_right(data)
-      mapped_json = map_complex_json(data)
-      @redis.rpush(@configuration.redis_key, mapped_json.to_json)
+      mapped_object = map_complex_object(data)
+      @redis.rpush(@configuration.redis_key, mapped_object.to_json)
     end
 
     def pop_left
@@ -34,17 +34,17 @@ module EventuallyTracker
     end
 
     private
-    def map_complex_json(object)
+    def map_complex_object(object)
       if object.is_a?(Array)
         array = []
         object.each do | value |
-          array.push(map_complex_json(value))
+          array.push(map_complex_object(value))
         end
         array
       elsif object.is_a?(Hash)
         hash = {}
         object.each do | key, value |
-          hash[key] = map_complex_json(value)
+          hash[key] = map_complex_object(value)
         end
         hash
       elsif object.is_a?(ActionDispatch::Http::UploadedFile)
