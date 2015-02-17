@@ -21,7 +21,7 @@ module EventuallyTracker
 
     def pop_left
       if @configuration.wait_events
-        element = @redis.blpop(@configuration.redis_key)[1]
+        element = @redis.blpop(@configuration.redis_key, 0)[1]
       else
         element = @redis.lpop(@configuration.redis_key)
       end
