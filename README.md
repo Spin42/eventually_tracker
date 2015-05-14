@@ -1,4 +1,4 @@
-# EventuallyTracker
+# Eventually Tracker
 
 Track all your controller events and model changes seamlessly and without code pollution.
 
