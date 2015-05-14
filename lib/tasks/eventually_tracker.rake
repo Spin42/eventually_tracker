@@ -2,21 +2,40 @@ require "rest-client"
 require "base64"
 
 namespace :eventually_tracker do
-  task :synchronize => :environment do
+
+  def push_remote(event)
+    uri        = EventuallyTracker.config.api_url
+    api_key    = Base64.encode64(EventuallyTracker.config.api_key)
+    api_secret = Base64.encode64(EventuallyTracker.config.api_secret)
+    logger.debug("Publish event: #{event} to #{uri.to_s}.")
+    RestClient.post(uri.to_s, event: event, content_type: :json, accept: :json, api_key: api_key, api_secret: api_secret)
+  end
+
+  def push_local(event)
+    event_handler = EventuallyTracker.config.event_handler
+    event_handler.handle_from_eventually_tracker(event)
+    logger.debug("Publish event: #{event} to event handler.")
+  end
+
+  task :synchronize, [ :push_type ] => :environment do | task, args |
     logger        = EventuallyTracker.logger
     buffer        = EventuallyTracker.buffer
     waiting_time  = 1
+    push_type     = args.push_type
+
     while event = buffer.pop_left do
       begin
-        uri        = EventuallyTracker.config.api_url
-        api_key    = Base64.encode64(EventuallyTracker.config.api_key)
-        api_secret = Base64.encode64(EventuallyTracker.config.api_secret)
-        logger.debug("Publish event: #{event} to #{uri.to_s}.")
-        RestClient.post(uri.to_s, event: event, content_type: :json, accept: :json, api_key: api_key, api_secret: api_secret)
+        if push_type == "remote"
+          push_remote(event)
+        elsif push_type == "local"
+          push_local(event)
+        else
+          raise ArgumentError, "The push type should be 'local' or 'remote'."
+        end
         logger.debug("Event published!")
         waiting_time = 1
       rescue => e
-        logger.error("Event not published, push it back and wait #{waiting_time} seconds.")
+        logger.warn("Event not published, push it back and wait #{waiting_time} seconds.")
         logger.error("#{e}")
         buffer.push_left(event)
         sleep(waiting_time)
@@ -25,5 +44,8 @@ namespace :eventually_tracker do
         logger.debug("#{buffer.size} events are left.")
       end
     end
+  end
+
+  task :synchronize_local => :environment do
   end
 end

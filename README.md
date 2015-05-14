@@ -78,7 +78,9 @@ class MessagesController < ApplicationController
 end
 ```
 
-Run `rake eventually_tracker:synchronize` to flush the events stored in redis and send them to the `config.api_url`.
+Run `rake eventually_tracker:synchronize[remote]` to flush the events stored in redis and send them to the `config.api_url`.
+
+Run `rake eventually_tracker:synchronize[local]` to flush the events stored in redis and send them to the `config.event_handler`.
 
 ## Event
 
