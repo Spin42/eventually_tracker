@@ -44,6 +44,7 @@ module EventuallyTracker
     config.api_secret               = "api_secret"
     config.api_key                  = "api_key"
     config.wait_events              = true
+    config.event_handler            = nil
     config.development_environments = []
     config.tracked_session_keys     = []
     config.rejected_user_agents     = []
