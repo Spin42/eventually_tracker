@@ -27,10 +27,8 @@ namespace :eventually_tracker do
       begin
         if push_type == "remote"
           push_remote(event)
-        elsif push_type == "local"
-          push_local(event)
         else
-          raise ArgumentError, "The push type should be 'local' or 'remote'."
+          push_local(event)
         end
         logger.debug("Event published!")
         waiting_time = 1
