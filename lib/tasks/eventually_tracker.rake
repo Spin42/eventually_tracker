@@ -12,7 +12,7 @@ namespace :eventually_tracker do
         api_key    = Base64.encode64 EventuallyTracker.config.api_key
         api_secret = Base64.encode64 EventuallyTracker.config.api_secret
         logger.debug "Publish event: #{event} to #{uri.to_s}."
-        RestClient.post uri.to_s, {event: event, api_key: api_key, api_secret: api_secret}.to_json, content_type: "application/json", accept: :json
+        RestClient.post uri.to_s, {event: event}.to_json, api_key: api_key, api_secret: api_secret, content_type: "application/json", accept: :json
         logger.debug "Event published!"
         waiting_time = 1
       rescue => e
