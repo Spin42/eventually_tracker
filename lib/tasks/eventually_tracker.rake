@@ -5,8 +5,8 @@ namespace :eventually_tracker do
 
   def push_remote(event)
     uri        = EventuallyTracker.config.api_url
-    api_key    = Base64.encode64(EventuallyTracker.config.api_key)
-    api_secret = Base64.encode64(EventuallyTracker.config.api_secret)
+    api_key    = EventuallyTracker.config.api_key
+    api_secret = EventuallyTracker.config.api_secret
     EventuallyTracker.logger.debug("Publish event: #{event} to #{uri.to_s}.")
     RestClient.post(uri.to_s, event: event, content_type: :json, accept: :json, api_key: api_key, api_secret: api_secret)
   end
@@ -44,6 +44,4 @@ namespace :eventually_tracker do
     end
   end
 
-  task :synchronize_local => :environment do
-  end
 end
