@@ -7,8 +7,14 @@ namespace :eventually_tracker do
     uri        = EventuallyTracker.config.api_url
     api_key    = EventuallyTracker.config.api_key
     api_secret = EventuallyTracker.config.api_secret
+    headers    = {
+      content_type: :json,
+      accept:       :json,
+      api_key:      api_key,
+      api_secret:   api_secret
+    }
     EventuallyTracker.logger.debug("Publish event: #{event} to #{uri.to_s}.")
-    RestClient.post(uri.to_s, event: event, content_type: :json, accept: :json, api_key: api_key, api_secret: api_secret)
+    RestClient.post(uri.to_s, event: event, headers)
   end
 
   def push_local(event)
