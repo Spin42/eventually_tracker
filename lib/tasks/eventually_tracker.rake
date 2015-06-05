@@ -14,7 +14,7 @@ namespace :eventually_tracker do
       api_secret:   api_secret
     }
     EventuallyTracker.logger.debug("Publish event: #{event} to #{uri.to_s}.")
-    RestClient.post(uri.to_s, event: event, headers)
+    RestClient.post(uri.to_s, { event: event }.to_json, headers)
   end
 
   def push_local(event)
