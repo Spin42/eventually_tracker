@@ -29,7 +29,7 @@ module EventuallyTracker
       EventuallyTracker::CoreExt.extend_active_record_base_dummy
       EventuallyTracker::CoreExt.extend_active_controller_base_dummy
     else
-      @logger             = EventuallyTracker::Logger.new
+      @logger             = @configuration.logger || EventuallyTracker::Logger.new
       @buffer             = EventuallyTracker::RedisBuffer.new(@logger, @configuration)
       eventually_tracker  = EventuallyTracker::Base.new(@logger, @buffer, @configuration)
       EventuallyTracker::CoreExt.extend_active_record_base(eventually_tracker)
@@ -48,6 +48,7 @@ module EventuallyTracker
     config.development_environments = []
     config.tracked_session_keys     = []
     config.rejected_user_agents     = []
+    config.logger                   = nil
   end
 end
 
