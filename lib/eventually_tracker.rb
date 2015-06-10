@@ -25,13 +25,14 @@ module EventuallyTracker
   end
 
   def self.init
+    @logger             = @configuration.logger || EventuallyTracker::Logger.new
+    @buffer             = EventuallyTracker::RedisBuffer.new(@logger, @configuration)
+    eventually_tracker  = EventuallyTracker::Base.new(@logger, @buffer, @configuration)
+
     if @configuration.development_environments.include?(Rails.env)
       EventuallyTracker::CoreExt.extend_active_record_base_dummy
       EventuallyTracker::CoreExt.extend_active_controller_base_dummy
     else
-      @logger             = @configuration.logger || EventuallyTracker::Logger.new
-      @buffer             = EventuallyTracker::RedisBuffer.new(@logger, @configuration)
-      eventually_tracker  = EventuallyTracker::Base.new(@logger, @buffer, @configuration)
       EventuallyTracker::CoreExt.extend_active_record_base(eventually_tracker)
       EventuallyTracker::CoreExt.extend_active_controller_base(eventually_tracker, @logger)
     end
@@ -39,10 +40,10 @@ module EventuallyTracker
 
   configure do |config|
     config.redis_key                = "eventually_tracker"
-    config.redis_url                = "redis://localhost:6379"
-    config.api_url                  = "http://localhost:3000/api/events"
-    config.api_secret               = "api_secret"
-    config.api_key                  = "api_key"
+    config.redis_url                = nil
+    config.api_url                  = nil
+    config.api_secret               = nil
+    config.api_key                  = nil
     config.wait_events              = true
     config.event_handler            = nil
     config.development_environments = []
