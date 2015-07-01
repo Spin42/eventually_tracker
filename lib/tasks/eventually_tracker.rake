@@ -30,11 +30,13 @@ namespace :eventually_tracker do
     push_type     = args.push_type
 
     while event = buffer.pop_left do
+
       begin
+        sanitized_event = sanitize(event)
         if push_type == "remote"
-          push_remote(event)
+          push_remote(sanitized_event)
         else
-          push_local(event)
+          push_local(sanitized_event)
         end
         logger.debug("Event published!")
         waiting_time = 1
@@ -47,6 +49,23 @@ namespace :eventually_tracker do
       ensure
         logger.debug("#{buffer.size} events are left.")
       end
+    end
+  end
+
+  def sanitize(value)
+    case value
+    when Array
+      value.map {|v| sanitize(v) }
+    when Hash
+      fitlered_value = {}
+      value.each do | k, v |
+        if not [ :password, :password_confirmation ].include?(k.to_sym)
+          fitlered_value[k] = sanitize(v)
+        end
+      end
+      fitlered_value
+    else
+      value
     end
   end
 
