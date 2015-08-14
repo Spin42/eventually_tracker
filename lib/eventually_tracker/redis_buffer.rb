@@ -39,7 +39,7 @@ module EventuallyTracker
 
     private
     def key(queue)
-      @configuration.redis_key_prefix + "-" + queue.to_s
+      @configuration.redis_key_prefix + ":" + queue.to_s
     end
 
     def map_complex_object(object)

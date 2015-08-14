@@ -4,26 +4,7 @@ module EventuallyTracker
   class Logger
 
     def initialize
-      Logging.color_scheme("bright",
-        :levels => {
-          :info  => :green,
-          :warn  => :yellow,
-          :error => :red,
-          :fatal => [:white, :on_red]
-        },
-        :date => :white,
-        :logger => :cyan,
-        :message => :white
-      )
-      Logging.appenders.stdout(
-        "stdout",
-        :layout => Logging.layouts.pattern(
-          :pattern => "[%d] %-5l %c: %m\n",
-          :color_scheme => "bright"
-        )
-      )
-      @logger = Logging.logger["Eventually Tracker"]
-      @logger.add_appenders("stdout")
+      @logger ||= Logging.logger(STDOUT)
     end
 
     def debug(text)
