@@ -7,13 +7,14 @@ module EventuallyTracker
       @buffer         = buffer
     end
 
-    def track_action(queues, controller_name, action_name, action_uid, data, session_data)
+    def track_action(queues, controller_name, action_name, response_code, action_uid, data, session_data)
       str =
       """Track controller action
       queues:\t\t#{queues}
       action_uid:\t#{action_uid}
       controller_name:\t#{controller_name}
       action_name:\t#{action_name}
+      response_code:\t#{response_code}
       session_data:\t#{session_data}
       data:\t\t#{data}
       """
@@ -25,6 +26,7 @@ module EventuallyTracker
         controller_name:  controller_name,
         action_name:      action_name,
         action_uid:       action_uid,
+        response_code:    response_code,
         data:             data,
         session_data:     session_data
       })

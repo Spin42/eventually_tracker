@@ -39,7 +39,7 @@ module EventuallyTracker
         define_singleton_method(:track_action) do | options = {} |
           queues = options[:queues] || EventuallyTracker.config.queues
           before_action(options) { define_action_uid }
-          before_action(options) { track_action(eventually_tracker, queues, logger) }
+          prepend_after_action(options) { track_action(eventually_tracker, queues, logger) }
           after_action(options)  { remove_action_uid }
 
           def define_action_uid
@@ -60,12 +60,13 @@ module EventuallyTracker
             cookies_data      = EventuallyTracker::CoreExt.extract_tracked_session_keys(session)
             controller_name   = params[:controller]
             action_name       = params[:action]
+            response_code     = response.status
             data              = params.reject do | key, value |
               REJECTED_ACTION_PARAMS_KEYS.include?(key)
             end
             data[:user_agent] = request.user_agent
             eventually_tracker.track_action(queues, controller_name, action_name,
-              @eventually_action_uid, data, cookies_data)
+              response_code, @eventually_action_uid, data, cookies_data)
           end
         end
       end
