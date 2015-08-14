@@ -7,9 +7,10 @@ module EventuallyTracker
       @buffer         = buffer
     end
 
-    def track_action(controller_name, action_name, action_uid, data, session_data)
+    def track_action(queues, controller_name, action_name, action_uid, data, session_data)
       str =
       """Track controller action
+      queues:\t\t#{queues}
       action_uid:\t#{action_uid}
       controller_name:\t#{controller_name}
       action_name:\t#{action_name}
@@ -17,7 +18,7 @@ module EventuallyTracker
       data:\t\t#{data}
       """
       @logger.info(str)
-      @buffer.push_right({
+      @buffer.push_right(queues, {
         application_name: Rails.application.class.parent_name.underscore,
         type:             "controller",
         date_time:        Time.now.utc,
@@ -29,9 +30,10 @@ module EventuallyTracker
       })
     end
 
-    def track_change(model_name, action_name, action_uid, data)
+    def track_change(queues, model_name, action_name, action_uid, data)
       str =
       """Track model change
+      queues:\t\t#{queues}
       action_uid:\t#{action_uid}
       model_name:\t#{model_name}
       action_name:\t#{action_name}
@@ -39,7 +41,7 @@ module EventuallyTracker
       """
       if !data.empty?
         @logger.info(str)
-        @buffer.push_right({
+        @buffer.push_right(queues, {
           application_name: Rails.application.class.parent_name.underscore,
           type:             "model",
           model_name:       model_name,

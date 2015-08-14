@@ -1,13 +1,13 @@
 module EventuallyTracker
   class Configuration
     include ActiveSupport::Configurable
-    config_accessor :redis_key
+    config_accessor :queues
+    config_accessor :redis_key_prefix
     config_accessor :redis_url
-    config_accessor :api_url
-    config_accessor :api_secret
-    config_accessor :api_key
-    config_accessor :event_handler
-    config_accessor :wait_events
+    config_accessor :remote_handlers
+    config_accessor :local_handlers
+    config_accessor :blocking_synchronize
+
     config_accessor :development_environments
     config_accessor :tracked_session_keys
     config_accessor :rejected_user_agents

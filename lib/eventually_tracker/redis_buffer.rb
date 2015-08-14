@@ -9,31 +9,39 @@ module EventuallyTracker
       @redis          = Redis.new(url: @configuration.redis_url)
     end
 
-    def push_left(data)
-      mapped_object = map_complex_object(data)
-      @redis.lpush(@configuration.redis_key, mapped_object.to_json)
+    def push_left(queues, data)
+      queues.each do | queue |
+        mapped_object = map_complex_object(data)
+        @redis.lpush(key(queue), mapped_object.to_json)
+      end
     end
 
-    def push_right(data)
-      mapped_object = map_complex_object(data)
-      @redis.rpush(@configuration.redis_key, mapped_object.to_json)
+    def push_right(queues, data)
+      queues.each do | queue |
+        mapped_object = map_complex_object(data)
+        @redis.rpush(key(queue), mapped_object.to_json)
+      end
     end
 
-    def pop_left
-      if @configuration.wait_events
-        element = @redis.blpop(@configuration.redis_key, 0)[1]
+    def pop_left(queue)
+      if @configuration.blocking_synchronize
+        element = @redis.blpop(key(queue), 0)[1]
       else
-        element = @redis.lpop(@configuration.redis_key)
+        element = @redis.lpop(key(queue))
       end
       element = JSON.parse(element) if element
       element
     end
 
-    def size
-      @redis.llen(@configuration.redis_key)
+    def size(queue)
+      @redis.llen(key(queue))
     end
 
     private
+    def key(queue)
+      @configuration.redis_key_prefix + "-" + queue.to_s
+    end
+
     def map_complex_object(object)
       if object.is_a?(Array)
         array = []

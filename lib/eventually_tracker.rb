@@ -39,13 +39,12 @@ module EventuallyTracker
   end
 
   configure do |config|
-    config.redis_key                = "eventually_tracker"
+    config.queues                   = [ "reporting", "gamification" ]
+    config.redis_key_prefix         = "eventually_tracker"
     config.redis_url                = nil
-    config.api_url                  = nil
-    config.api_secret               = nil
-    config.api_key                  = nil
-    config.wait_events              = true
-    config.event_handler            = nil
+    config.remote_handlers          = {}
+    config.blocking_synchronize     = true
+    config.local_handlers           = {}
     config.development_environments = []
     config.tracked_session_keys     = []
     config.rejected_user_agents     = []

@@ -10,17 +10,20 @@ module EventuallyTracker
 
     def self.extend_active_record_base(eventually_tracker)
       ActiveRecord::Base.class_eval do
-        define_singleton_method(:track_change) do
-          after_create  { track_change(eventually_tracker, :create, changes) }
-          after_update  { track_change(eventually_tracker, :update, changes) }
-          after_destroy { track_change(eventually_tracker, :destroy, { "id" => [id, nil] }) }
+        define_singleton_method(:track_change) do | options = {} |
+          queues = options[:queues] || EventuallyTracker.config.queues
+          after_create  { track_change(eventually_tracker, queues, :create, changes) }
+          after_update  { track_change(eventually_tracker, queues, :update, changes) }
+          after_destroy {
+            track_change(eventually_tracker, queues, :destroy, { "id" => [id, nil] })
+          }
         end
 
-        def track_change(eventually_tracker, action_name, changes)
+        def track_change(eventually_tracker, queues, action_name, changes)
           model_name  = self.class.name.underscore
           data        = changes.except(:created_at, :updated_at)
           action_uid  = send(ACTION_UID_METHOD_NAME) if respond_to?(ACTION_UID_METHOD_NAME)
-          eventually_tracker.track_change(model_name, action_name, action_uid, data)
+          eventually_tracker.track_change(queues, model_name, action_name, action_uid, data)
         end
       end
     end
@@ -34,9 +37,9 @@ module EventuallyTracker
     def self.extend_active_controller_base(eventually_tracker, logger)
       ActionController::Base.class_eval do
         define_singleton_method(:track_action) do | options = {} |
-
+          queues = options[:queues] || EventuallyTracker.config.queues
           before_action(options) { define_action_uid }
-          before_action(options) { track_action(eventually_tracker, logger) }
+          before_action(options) { track_action(eventually_tracker, queues, logger) }
           after_action(options)  { remove_action_uid }
 
           def define_action_uid
@@ -49,7 +52,7 @@ module EventuallyTracker
             ActiveRecord::Base.send(:remove_method, ACTION_UID_METHOD_NAME)
           end
 
-          def track_action(eventually_tracker, logger)
+          def track_action(eventually_tracker, queues, logger)
             if EventuallyTracker::CoreExt.is_rejected_origin?(request)
               logger.warn "Origin user agent rejected: #{request.user_agent}"
               return
@@ -61,7 +64,8 @@ module EventuallyTracker
               REJECTED_ACTION_PARAMS_KEYS.include?(key)
             end
             data[:user_agent] = request.user_agent
-            eventually_tracker.track_action(controller_name, action_name, @eventually_action_uid, data, cookies_data)
+            eventually_tracker.track_action(queues, controller_name, action_name,
+              @eventually_action_uid, data, cookies_data)
           end
         end
       end
