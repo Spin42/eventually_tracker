@@ -22,8 +22,9 @@ Add an initializer eventually_tracker.rb (those are example values).
 
 ```ruby
 EventuallyTracker.configure do | config |
+    # Queues where track_action and track_change will push events
     config.queues                   = [ "reporting" ]
-    config.redis_key_prefix         = "eventually_tracker"
+    config.redis_key_prefix         = "eventually_tracker"       
     config.redis_url                = "redis://127.0.0.1:6379/1"
     config.remote_handlers          = {
       reporting: {
@@ -32,12 +33,14 @@ EventuallyTracker.configure do | config |
         api_key:    "ApiKey"
       }
     },
-    config.blocking_synchronize     = true # eventually_tracker:synchronize blocks when there is no event
-    config.local_handlers           = {}
-    config.development_environments = [] # List of the environments that are not tracked
-    config.tracked_session_keys     = []
-    config.rejected_user_agents     = []
-    config.logger                   = nil
+    # eventually_tracker:synchronize blocks when there is no event
+    config.blocking_synchronize     = true  (default: true)
+    config.local_handlers           = {}    (default: {})
+    # List of the environments that are not tracked
+    config.development_environments = []    (default: [])
+    config.tracked_session_keys     = []    (default: [])
+    config.rejected_user_agents     = []    (default: [])
+    config.logger                   = nil   (default: internal logger)
  end
 ```
 
