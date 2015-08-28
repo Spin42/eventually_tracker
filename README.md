@@ -18,46 +18,30 @@ And then execute:
 
     $ bundle
 
-## Usage
-
 Add an initializer eventually_tracker.rb.
 
 ```ruby
 EventuallyTracker.configure do | config |
-    config.redis_key    				      = "eventually_tracker"
-    config.redis_url    				      = "redis://localhost:6379"
-    config.api_url      				      = "http://localhost:3000/api/events"
-    config.api_secret   				      = "api_secret"
-    config.api_key      				      = "api_key"
-    config.wait_events 					      = true
-    config.development_environments 	= [ "development" ]
-    config.tracked_session_keys     	= [ "user_id" ]
+    config.queues                   = [ "reporting" ]
+    config.redis_key_prefix         = "eventually_tracker"
+    config.redis_url                = "redis://127.0.0.1:6379/1"
+    config.remote_handlers          = {
+      reporting: {
+        api_url: Figaro.env.eventually_reporting_url,
+        api_secret: Figaro.env.eventually_reporting_secret,
+        api_key: Figaro.env.eventually_reporting_key
+      }
+    },
+    config.blocking_synchronize     = true # eventually_tracker:synchronize blocks when there is no event
+    config.local_handlers           = {}
+    config.development_environments = [] # List of the environments that are not tracked
+    config.tracked_session_keys     = []
+    config.rejected_user_agents     = []
+    config.logger                   = nil
  end
 ```
 
-Create a controller that respond to POST `config.api_url` to handle the event.
-
-```ruby
-require "base64"
-
-class Api::EventsController < APIController
-  before_action :authenticate
-
-  def create
-    event = params["event"]
-    # Handle event data
-  end
-
-  private
-  def authenticate
-    api_key     = Base64.decode64 params["api_key"]
-    api_secret  = Base64.decode64 params["api_secret"]
-    unless api_key == "api_key" && api_secret == "api_secret"
-      render json: { error: "Invalid credentials" }, status: :unauthorized
-    end
-  end
-end
-```
+## Usage
 
 Add `track_change` to the models that you want to track.
 
@@ -78,11 +62,9 @@ class MessagesController < ApplicationController
 end
 ```
 
-Run `rake eventually_tracker:synchronize[remote]` to flush the events stored in redis and send them to the `config.api_url`.
+Run `rake eventually_tracker:synchronize` to flush the events stored in redis and send them to the `config.remote_handlers` specified in `config.queues`.
 
-Run `rake eventually_tracker:synchronize[local]` to flush the events stored in redis and send them to the `config.event_handler`.
-
-## Event
+## Event types
 
 ### Model
 
@@ -106,7 +88,6 @@ Run `rake eventually_tracker:synchronize[local]` to flush the events stored in r
   }
 }
 ```
-`action` is `create`, `update` or `destroy`
 
 ### Controller
 
