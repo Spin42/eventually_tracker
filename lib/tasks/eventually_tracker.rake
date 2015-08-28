@@ -2,31 +2,34 @@ require "rest-client"
 require "base64"
 
 namespace :eventually_tracker do
-
   def push_remote(queue, event)
     remote_handlers = EventuallyTracker.config.remote_handlers
     remote_handler  = remote_handlers[queue.to_sym] || remote_handlers[queue.to_s]
-    if (remote_handler)
-      api_url             = remote_handler[:api_url]
-      api_key             = remote_handler[:api_key]
-      api_secret          = remote_handler[:api_secret]
-      headers         = {
-        content_type: :json,
-        accept:       :json,
-        api_key:      api_key,
-        api_secret:   api_secret
-      }
-      EventuallyTracker.logger.debug("Publish event: #{event} to remote handler #{api_url.to_s}.")
-      RestClient.post(api_url.to_s, { event: event }.to_json, headers)
-    else
+    if remote_handler.nil?
       EventuallyTracker.logger.warn("Remote handler not found for queue #{queue}.")
+      return
     end
+    api_url = remote_handler[:api_url]
+    headers = remote_handler_http_headers(remote_handler)
+    EventuallyTracker.logger.debug("Publish event: #{event} to remote handler #{api_url}.")
+    RestClient.post(api_url.to_s, { event: event }.to_json, headers)
+  end
+
+  def remote_handler_http_headers(remote_handler)
+    api_key    = remote_handler[:api_key]
+    api_secret = remote_handler[:api_secret]
+    {
+      content_type: :json,
+      accept:       :json,
+      api_key:      api_key,
+      api_secret:   api_secret
+    }
   end
 
   def push_local(queue, event)
     local_handlers = EventuallyTracker.config.local_handlers
     local_handler  = local_handlers[queue.to_sym] || local_handlers[queue.to_s]
-    if (local_handler)
+    if local_handler
       local_handler.handle_from_eventually_tracker(event)
       EventuallyTracker.logger.debug("Publish event: #{event} to local handler.")
     else
@@ -34,9 +37,9 @@ namespace :eventually_tracker do
     end
   end
 
-  task :synchronize => :environment do | task, args |
+  task synchronize: :environment do
     queues = EventuallyTracker.config.queues
-    queues.each do | queue |
+    queues.each do |queue|
       puts "Start sync queue #{queue}"
       Process.fork do
         synchronize(queue)
@@ -49,7 +52,7 @@ namespace :eventually_tracker do
     logger        = EventuallyTracker.logger
     buffer        = EventuallyTracker.buffer
     waiting_time  = 1
-    while event = buffer.pop_left(queue) do
+    while event = buffer.pop_left(queue)
       begin
         sanitized_event = sanitize(event)
         push_remote(queue, sanitized_event)
@@ -71,11 +74,11 @@ namespace :eventually_tracker do
   def sanitize(value)
     case value
     when Array
-      value.map {|v| sanitize(v) }
+      value.map { |v| sanitize(v) }
     when Hash
       fitlered_value = {}
-      value.each do | k, v |
-        if not [ :password, :password_confirmation ].include?(k.to_sym)
+      value.each do |k, v|
+        unless [:password, :password_confirmation].include?(k.to_sym)
           fitlered_value[k] = sanitize(v)
         end
       end
@@ -84,5 +87,4 @@ namespace :eventually_tracker do
       value
     end
   end
-
 end

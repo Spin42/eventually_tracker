@@ -2,7 +2,6 @@ require "logging"
 
 module EventuallyTracker
   class Logger
-
     def initialize
       @logger ||= Logging.logger(STDOUT)
     end

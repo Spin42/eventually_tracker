@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.name          = "eventually_tracker"
   spec.version       = EventuallyTracker::VERSION
   spec.authors       = ["Lo\xC3\xAFc Vigneron"]
-  spec.email         = ["loic.vigneron@gmail.com"]
+  spec.email         = ["loic@spin42.com"]
   spec.summary       = "Track your application events."
   spec.description   = "Track all your controller events and model changes seamlessly and without code pollution."
   spec.homepage      = ""
@@ -20,6 +20,8 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "bundler", "~> 1.7"
   spec.add_development_dependency "rake", "~> 10.0"
+  spec.add_development_dependency "rubocop"
+
   spec.add_dependency "rest-client"
   spec.add_dependency "redis"
   spec.add_dependency "logging"
