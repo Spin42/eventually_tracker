@@ -18,7 +18,7 @@ And then execute:
 
     $ bundle
 
-Add an initializer eventually_tracker.rb.
+Add an initializer eventually_tracker.rb (those are example values).
 
 ```ruby
 EventuallyTracker.configure do | config |
@@ -27,9 +27,9 @@ EventuallyTracker.configure do | config |
     config.redis_url                = "redis://127.0.0.1:6379/1"
     config.remote_handlers          = {
       reporting: {
-        api_url: Figaro.env.eventually_reporting_url,
-        api_secret: Figaro.env.eventually_reporting_secret,
-        api_key: Figaro.env.eventually_reporting_key
+        api_url:    "http://127.0.0.1:7000/events",
+        api_secret: "ApiSecret",
+        api_key:    "ApiKey"
       }
     },
     config.blocking_synchronize     = true # eventually_tracker:synchronize blocks when there is no event
