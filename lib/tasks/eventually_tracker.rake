@@ -40,7 +40,7 @@ namespace :eventually_tracker do
   task synchronize: :environment do
     queues = EventuallyTracker.config.queues
     queues.each do |queue|
-      puts "Start sync queue #{queue}"
+      EventuallyTracker.logger.info("Start sync queue #{queue}")
       Process.fork do
         synchronize(queue)
       end

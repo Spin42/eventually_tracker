@@ -43,7 +43,7 @@ EventuallyTracker.configure do | config |
 
 ## Usage
 
-Add `track_change` to the models that you want to track.
+Add `track_change` to the models that you want to track and the changes will be automatically stored in `config.queues`.
 
 ```ruby
 class Message < ActiveRecord::Base
@@ -51,7 +51,7 @@ class Message < ActiveRecord::Base
 end
 ```
 
-Add `track_action` to the controllers that you want to track.
+Add `track_action` to the controllers that you want to track and the actions will be automatically stored in `config.queues`.
 
 ```ruby
 class MessagesController < ApplicationController
