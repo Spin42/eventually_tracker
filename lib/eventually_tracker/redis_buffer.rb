@@ -46,7 +46,7 @@ module EventuallyTracker
       if object.is_a?(Array)
         map_array(object)
       elsif object.is_a?(Hash)
-        map_hash(oject)
+        map_hash(object)
       elsif object.is_a?(ActionDispatch::Http::UploadedFile)
         map_file(object)
       else

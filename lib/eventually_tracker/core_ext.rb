@@ -17,10 +17,12 @@ module EventuallyTracker
         end
 
         def track_change(eventually_tracker, queues, action_name, changes)
-          model_name  = self.class.name.underscore
-          data        = changes.except(:created_at, :updated_at)
-          action_uid  = send(ACTION_UID_METHOD_NAME) if respond_to?(ACTION_UID_METHOD_NAME)
-          eventually_tracker.track_change(queues, model_name, action_name, action_uid, data)
+          change      = {}
+          change[:model_name]  = self.class.name.underscore
+          change[:data]        = changes.except(:created_at, :updated_at)
+          change[:action_uid]  = send(ACTION_UID_METHOD_NAME) if respond_to?(ACTION_UID_METHOD_NAME)
+          change[:action_name] = action_name
+          eventually_tracker.track_change(queues, change)
         end
       end
     end
@@ -54,16 +56,17 @@ module EventuallyTracker
               logger.warn "Origin user agent rejected: #{request.user_agent}"
               return
             end
-            cookies_data      = EventuallyTracker::CoreExt.extract_tracked_session_keys(session)
-            controller_name   = params[:controller]
-            action_name       = params[:action]
-            response_code     = response.status
-            data              = params.reject do |key, _value|
+            action            = {}
+            action[:cookies_data]      = EventuallyTracker::CoreExt.extract_tracked_session_keys(session)
+            action[:controller_name]   = params[:controller]
+            action[:action_name]       = params[:action]
+            action[:response_code]     = response.status
+            action[:data]              = params.reject do |key, _value|
               REJECTED_ACTION_PARAMS_KEYS.include?(key)
             end
-            data[:user_agent] = request.user_agent
-            eventually_tracker.track_action(queues, controller_name, action_name, response_code,
-                                            @eventually_action_uid, data, cookies_data)
+            action[:data][:user_agent] = request.user_agent
+            action[:action_uid]        = @eventually_action_uid
+            eventually_tracker.track_action(queues, action)
           end
         end
       end
