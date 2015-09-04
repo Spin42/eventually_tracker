@@ -38,15 +38,16 @@ module EventuallyTracker
   end
 
   configure do |config|
-    config.queues                   = []
-    config.redis_key_prefix         = "eventually_tracker"
-    config.redis_url                = nil
-    config.remote_handlers          = {}
-    config.blocking_synchronize     = true
-    config.local_handlers           = {}
-    config.development_environments = []
-    config.tracked_session_keys     = []
-    config.rejected_user_agents     = []
-    config.logger                   = nil
+    config.queues                     = []
+    config.redis_key_prefix           = "eventually_tracker"
+    config.redis_url                  = nil
+    config.remote_handlers            = {}
+    config.blocking_synchronize       = true
+    config.local_handlers             = {}
+    config.development_environments   = []
+    config.tracked_session_keys       = []
+    config.rejected_user_agents       = []
+    config.logger                     = nil
+    config.controller_additional_data = nil
   end
 end

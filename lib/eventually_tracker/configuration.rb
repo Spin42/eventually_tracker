@@ -12,5 +12,6 @@ module EventuallyTracker
     config_accessor :tracked_session_keys
     config_accessor :rejected_user_agents
     config_accessor :logger
+    config_accessor :controller_additional_data
   end
 end

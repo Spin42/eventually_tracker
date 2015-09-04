@@ -56,8 +56,12 @@ module EventuallyTracker
               logger.warn "Origin user agent rejected: #{request.user_agent}"
               return
             end
-            action            = {}
+            additional_data_block      = EventuallyTracker.config.controller_additional_data
+            action                     = {}
             action[:cookies_data]      = EventuallyTracker::CoreExt.extract_tracked_session_keys(session)
+            if additional_data_block
+              action[:additional_data] = self.instance_exec(&additional_data_block)
+            end
             action[:controller_name]   = params[:controller]
             action[:action_name]       = params[:action]
             action[:response_code]     = response.status
