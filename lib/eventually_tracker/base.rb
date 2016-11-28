@@ -32,7 +32,9 @@ module EventuallyTracker
       when Hash
         fitlered_value = {}
         value.each do |k, v|
-          unless [:password, :password_confirmation].include?(k.to_sym)
+          if v.is_a?(ActionDispatch::Http::UploadedFile)
+            fitlered_value[k] = v.original_filename
+          elsif ![:password, :password_confirmation].include?(k.to_sym)
             fitlered_value[k] = sanitize(v)
           end
         end
